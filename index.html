@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        DNA Sequence Analyzer
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container py-5">
+
+    <h1 class="text-center mb-4">
+        DNA Sequence Analyzer
+    </h1>
+
+    <div class="card p-4 shadow">
+
+        <form method="POST"
+              enctype="multipart/form-data">
+
+            <label class="form-label">
+                Upload FASTA / FASTQ
+            </label>
+
+            <input
+                type="file"
+                name="files"
+                class="form-control"
+                accept=".fasta,.fa,.fastq"
+                multiple
+                required
+            >
+
+            <br>
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                Analyze
+            </button>
+
+        </form>
+
+    </div>
+
+    {% if top_3 %}
+
+    <div class="card mt-4 p-4">
+
+        <h3>Dataset Statistics</h3>
+
+        <ul>
+            <li>Total Sequences : {{ total_sequences }}</li>
+
+            <li>Average GC :
+                {{ "%.2f"|format(avg_gc) }}%
+            </li>
+
+            <li>Highest GC :
+                {{ "%.2f"|format(max_gc) }}%
+            </li>
+
+            <li>Lowest GC :
+                {{ "%.2f"|format(min_gc) }}%
+            </li>
+        </ul>
+
+    </div>
+
+    <div class="card mt-4 p-4">
+
+        <h3>
+            Total Nucleotide Frequency
+        </h3>
+
+        <table class="table">
+
+            <thead>
+
+            <tr>
+                <th>A</th>
+                <th>C</th>
+                <th>G</th>
+                <th>T</th>
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr>
+                <td>{{ total_freq.A }}</td>
+                <td>{{ total_freq.C }}</td>
+                <td>{{ total_freq.G }}</td>
+                <td>{{ total_freq.T }}</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="card mt-4 p-4">
+
+        <h3>
+            Top 3 Highest GC Content
+        </h3>
+
+        <table class="table table-striped">
+
+            <thead>
+
+            <tr>
+                <th>Rank</th>
+                <th>File</th>
+                <th>ID</th>
+                <th>GC Content</th>
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for item in top_3 %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ item.file }}
+                </td>
+
+                <td>
+                    {{ item.id }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(item.gc) }}%
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="card mt-4 p-4">
+
+        <h3>
+            GC Content Visualization
+        </h3>
+
+        <img
+            src="data:image/png;base64,{{ plot_url }}"
+            class="img-fluid"
+        >
+
+    </div>
+
+    <div class="mt-4">
+
+        <a href="/download"
+           class="btn btn-success">
+
+            Download CSV
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
