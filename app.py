@@ -36,9 +36,12 @@ def get_nucleotide_freq(sequence):
 
 def create_plot(data):
 
+    if len(data) == 0:
+        return None
+
     top_plot = data[:20]
 
-    ids = [item['id'][:10] for item in top_plot]
+    ids = [item['id'][:12] for item in top_plot]
     gc_values = [item['gc'] for item in top_plot]
 
     plt.figure(figsize=(12, 6))
@@ -46,7 +49,7 @@ def create_plot(data):
 
     plt.xlabel("Sequence ID")
     plt.ylabel("GC Content (%)")
-    plt.title("GC Content per Sequence")
+    plt.title("Top 20 GC Content")
     plt.xticks(rotation=45)
 
     plt.tight_layout()
@@ -54,7 +57,6 @@ def create_plot(data):
     img = io.BytesIO()
 
     plt.savefig(img, format='png')
-
     img.seek(0)
 
     plot_url = base64.b64encode(
@@ -115,11 +117,13 @@ def index():
                     total_freq[nuc] += freq[nuc]
 
                 all_sequences.append({
+
                     'file': file.filename,
                     'id': record.id,
                     'gc': gc_content,
                     'freq': freq,
                     'length': len(seq_str)
+
                 })
 
         sorted_data = sorted(
@@ -128,34 +132,98 @@ def index():
             reverse=True
         )
 
-        top_3 = sorted_data[:3]
-
         total_sequences = len(sorted_data)
 
-        if total_sequences > 0:
+        if total_sequences == 0:
 
-            avg_gc = sum(
-                item['gc']
-                for item in sorted_data
-            ) / total_sequences
-
-            max_gc = max(
-                item['gc']
-                for item in sorted_data
+            return render_template(
+                'index.html',
+                top_3=None
             )
 
-            min_gc = min(
-                item['gc']
-                for item in sorted_data
-            )
+        # ==========================
+        # BASIC STATISTICS
+        # ==========================
 
-        else:
+        top_3 = sorted_data[:3]
+        top_10 = sorted_data[:10]
 
-            avg_gc = 0
-            max_gc = 0
-            min_gc = 0
+        highest_gc_seq = sorted_data[0]
+        lowest_gc_seq = sorted_data[-1]
 
-        plot_url = create_plot(sorted_data)
+        avg_gc = sum(
+            item['gc']
+            for item in sorted_data
+        ) / total_sequences
+
+        avg_length = sum(
+            item['length']
+            for item in sorted_data
+        ) / total_sequences
+
+        max_gc = highest_gc_seq['gc']
+        min_gc = lowest_gc_seq['gc']
+
+        # ==========================
+        # GC DISTRIBUTION
+        # ==========================
+
+        low_gc = 0
+        medium_gc = 0
+        high_gc = 0
+
+        for item in sorted_data:
+
+            if item['gc'] < 40:
+
+                low_gc += 1
+
+            elif item['gc'] <= 60:
+
+                medium_gc += 1
+
+            else:
+
+                high_gc += 1
+
+        # ==========================
+        # NUCLEOTIDE PERCENTAGE
+        # ==========================
+
+        total_bases = sum(
+            total_freq.values()
+        )
+
+        nucleotide_percent = {
+            'A': 0,
+            'C': 0,
+            'G': 0,
+            'T': 0
+        }
+
+        if total_bases > 0:
+
+            nucleotide_percent = {
+
+                nuc:
+                (count / total_bases) * 100
+
+                for nuc, count
+                in total_freq.items()
+
+            }
+
+        # ==========================
+        # GRAPH
+        # ==========================
+
+        plot_url = create_plot(
+            sorted_data
+        )
+
+        # ==========================
+        # CSV EXPORT
+        # ==========================
 
         csv_path = os.path.join(
             'results',
@@ -165,12 +233,14 @@ def index():
         with open(
             csv_path,
             'w',
-            newline=''
+            newline='',
+            encoding='utf-8'
         ) as f:
 
             writer = csv.writer(f)
 
             writer.writerow([
+
                 'File',
                 'Sequence ID',
                 'Length',
@@ -179,11 +249,13 @@ def index():
                 'C',
                 'G',
                 'T'
+
             ])
 
             for item in sorted_data:
 
                 writer.writerow([
+
                     item['file'],
                     item['id'],
                     item['length'],
@@ -192,18 +264,39 @@ def index():
                     item['freq']['C'],
                     item['freq']['G'],
                     item['freq']['T']
+
                 ])
 
         return render_template(
+
             'index.html',
+
             top_3=top_3,
-            plot_url=plot_url,
-            csv_ready=True,
+            top_10=top_10,
+
             total_sequences=total_sequences,
+
             avg_gc=avg_gc,
+            avg_length=avg_length,
+
             max_gc=max_gc,
             min_gc=min_gc,
-            total_freq=total_freq
+
+            highest_gc_seq=highest_gc_seq,
+            lowest_gc_seq=lowest_gc_seq,
+
+            low_gc=low_gc,
+            medium_gc=medium_gc,
+            high_gc=high_gc,
+
+            total_freq=total_freq,
+            nucleotide_percent=nucleotide_percent,
+
+            all_data=sorted_data,
+
+            plot_url=plot_url,
+            csv_ready=True
+
         )
 
     return render_template(
