@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>
-        DNA Sequence Analyzer
-    </title>
+    <title>DNA Sequence Analyzer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -18,35 +18,153 @@
 
 <div class="container py-5">
 
-    <h1 class="text-center mb-4">
-        DNA Sequence Analyzer
-    </h1>
+    <!-- HEADER -->
+    <div class="card shadow-lg p-5 mb-4">
 
-    <div class="card p-4 shadow">
+        <h1 class="text-center text-primary">
+            DNA Sequence Analyzer
+        </h1>
+
+        <p class="text-center text-muted">
+            Bioinformatics Mini Project
+        </p>
+
+        <hr>
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <h4>Author Information</h4>
+
+                <ul class="list-group">
+
+                    <li class="list-group-item">
+                        <strong>Nama:</strong>
+                        Noel Napitupulu
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>NIM:</strong>
+                        G0401241004
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div class="col-md-8">
+
+                <h4>What is GC Content?</h4>
+
+                <p style="text-align: justify;">
+                    GC Content adalah persentase basa nitrogen
+                    Guanin (G) dan Sitosin (C) yang terdapat
+                    dalam suatu molekul DNA atau RNA.
+                </p>
+
+                <p style="text-align: justify;">
+                    Dalam bioinformatika, GC Content digunakan
+                    untuk menganalisis karakteristik suatu
+                    sekuens genetik. Pasangan basa G-C memiliki
+                    tiga ikatan hidrogen sehingga lebih stabil
+                    dibandingkan pasangan basa A-T yang hanya
+                    memiliki dua ikatan hidrogen.
+                </p>
+
+                <p style="text-align: justify;">
+                    Oleh karena itu, nilai GC Content sering
+                    digunakan sebagai indikator stabilitas DNA
+                    serta untuk membandingkan karakteristik
+                    berbagai organisme.
+                </p>
+
+                <div class="alert alert-success mt-3">
+
+                    <h5>How To Use</h5>
+
+                    <ol class="mb-0">
+
+                        <li>Pilih satu atau beberapa file FASTA / FASTQ.</li>
+
+                        <li>Klik tombol Analyze DNA Sequences.</li>
+
+                        <li>Tunggu proses analisis selesai.</li>
+
+                        <li>Lihat statistik, grafik, dan ranking GC Content.</li>
+
+                        <li>Unduh hasil analisis dalam format CSV.</li>
+
+                    </ol>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="card shadow p-4">
+
+        <h3 class="mb-3">
+            Upload FASTA / FASTQ Files
+        </h3>
+
+        <div class="alert alert-info">
+
+            <strong>Information:</strong>
+
+            Anda dapat mengunggah satu atau lebih file
+            <strong>.FASTA</strong> atau
+            <strong>.FASTQ</strong> sekaligus.
+
+            <ul class="mt-2 mb-0">
+
+                <li>Membaca seluruh sekuens DNA.</li>
+
+                <li>Menghitung frekuensi nukleotida A, C, G, dan T.</li>
+
+                <li>Menghitung GC Content setiap sekuens.</li>
+
+                <li>Mengurutkan sekuens berdasarkan GC Content.</li>
+
+                <li>Menampilkan statistik dan visualisasi hasil analisis.</li>
+
+            </ul>
+
+        </div>
 
         <form method="POST"
               enctype="multipart/form-data">
 
-            <label class="form-label">
-                Upload FASTA / FASTQ
-            </label>
-
             <input
                 type="file"
                 name="files"
+                id="fileInput"
                 class="form-control"
                 accept=".fasta,.fa,.fastq"
                 multiple
                 required
             >
 
-            <br>
+            <small
+                id="fileCount"
+                class="text-muted">
+
+                Belum ada file dipilih
+
+            </small>
+
+            <br><br>
 
             <button
                 type="submit"
-                class="btn btn-primary">
+                class="btn btn-primary btn-lg w-100">
 
-                Analyze
+                🔬 Analyze DNA Sequences
+
             </button>
 
         </form>
@@ -55,37 +173,85 @@
 
     {% if top_3 %}
 
-    <div class="card mt-4 p-4">
+    <!-- DATASET STATISTICS -->
+    <div class="card shadow mt-4 p-4">
 
-        <h3>Dataset Statistics</h3>
+        <h3>
+            Dataset Statistics
+        </h3>
 
-        <ul>
-            <li>Total Sequences : {{ total_sequences }}</li>
+        <ul class="list-group">
 
-            <li>Average GC :
-                {{ "%.2f"|format(avg_gc) }}%
+            <li class="list-group-item">
+                Total Sequences :
+                <strong>{{ total_sequences }}</strong>
             </li>
 
-            <li>Highest GC :
-                {{ "%.2f"|format(max_gc) }}%
+            <li class="list-group-item">
+                Average GC Content :
+                <strong>{{ "%.2f"|format(avg_gc) }}%</strong>
             </li>
 
-            <li>Lowest GC :
-                {{ "%.2f"|format(min_gc) }}%
+            <li class="list-group-item">
+                Average Length :
+                <strong>{{ "%.2f"|format(avg_length) }} bp</strong>
             </li>
+
+            <li class="list-group-item">
+                Highest GC Content :
+                <strong>{{ "%.2f"|format(max_gc) }}%</strong>
+            </li>
+
+            <li class="list-group-item">
+                Lowest GC Content :
+                <strong>{{ "%.2f"|format(min_gc) }}%</strong>
+            </li>
+
         </ul>
 
     </div>
 
-    <div class="card mt-4 p-4">
+    <!-- GC EXTREMES -->
+    <div class="card shadow mt-4 p-4">
+
+        <h3>
+            GC Content Extremes
+        </h3>
+
+        <table class="table table-bordered">
+
+            <tr>
+                <th>Category</th>
+                <th>Sequence ID</th>
+                <th>GC Content</th>
+            </tr>
+
+            <tr>
+                <td>Highest GC</td>
+                <td>{{ highest_gc_seq.id }}</td>
+                <td>{{ "%.2f"|format(highest_gc_seq.gc) }}%</td>
+            </tr>
+
+            <tr>
+                <td>Lowest GC</td>
+                <td>{{ lowest_gc_seq.id }}</td>
+                <td>{{ "%.2f"|format(lowest_gc_seq.gc) }}%</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- NUCLEOTIDE FREQUENCY -->
+    <div class="card shadow mt-4 p-4">
 
         <h3>
             Total Nucleotide Frequency
         </h3>
 
-        <table class="table">
+        <table class="table table-bordered text-center">
 
-            <thead>
+            <thead class="table-primary">
 
             <tr>
                 <th>A</th>
@@ -99,10 +265,12 @@
             <tbody>
 
             <tr>
+
                 <td>{{ total_freq.A }}</td>
                 <td>{{ total_freq.C }}</td>
                 <td>{{ total_freq.G }}</td>
                 <td>{{ total_freq.T }}</td>
+
             </tr>
 
             </tbody>
@@ -111,7 +279,84 @@
 
     </div>
 
-    <div class="card mt-4 p-4">
+    <!-- NUCLEOTIDE COMPOSITION -->
+    <div class="card shadow mt-4 p-4">
+
+        <h3>
+            Nucleotide Composition (%)
+        </h3>
+
+        <table class="table table-bordered text-center">
+
+            <thead class="table-info">
+
+            <tr>
+
+                <th>A</th>
+                <th>C</th>
+                <th>G</th>
+                <th>T</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr>
+
+                <td>{{ "%.2f"|format(nucleotide_percent.A) }}%</td>
+                <td>{{ "%.2f"|format(nucleotide_percent.C) }}%</td>
+                <td>{{ "%.2f"|format(nucleotide_percent.G) }}%</td>
+                <td>{{ "%.2f"|format(nucleotide_percent.T) }}%</td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- GC DISTRIBUTION -->
+    <div class="card shadow mt-4 p-4">
+
+        <h3>
+            GC Distribution
+        </h3>
+
+        <table class="table table-bordered text-center">
+
+            <thead class="table-warning">
+
+            <tr>
+
+                <th>Low GC (&lt;40%)</th>
+                <th>Medium GC (40-60%)</th>
+                <th>High GC (&gt;60%)</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr>
+
+                <td>{{ low_gc }}</td>
+                <td>{{ medium_gc }}</td>
+                <td>{{ high_gc }}</td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- TOP 3 -->
+    <div class="card shadow mt-4 p-4">
 
         <h3>
             Top 3 Highest GC Content
@@ -119,13 +364,15 @@
 
         <table class="table table-striped">
 
-            <thead>
+            <thead class="table-success">
 
             <tr>
+
                 <th>Rank</th>
                 <th>File</th>
-                <th>ID</th>
-                <th>GC Content</th>
+                <th>Sequence ID</th>
+                <th>GC Content (%)</th>
+
             </tr>
 
             </thead>
@@ -136,21 +383,10 @@
 
             <tr>
 
-                <td>
-                    {{ loop.index }}
-                </td>
-
-                <td>
-                    {{ item.file }}
-                </td>
-
-                <td>
-                    {{ item.id }}
-                </td>
-
-                <td>
-                    {{ "%.2f"|format(item.gc) }}%
-                </td>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.file }}</td>
+                <td>{{ item.id }}</td>
+                <td>{{ "%.2f"|format(item.gc) }}%</td>
 
             </tr>
 
@@ -162,7 +398,49 @@
 
     </div>
 
-    <div class="card mt-4 p-4">
+    <!-- TOP 10 -->
+    <div class="card shadow mt-4 p-4">
+
+        <h3>
+            Top 10 Highest GC Content
+        </h3>
+
+        <table class="table table-striped">
+
+            <thead class="table-dark">
+
+            <tr>
+
+                <th>Rank</th>
+                <th>ID</th>
+                <th>GC Content (%)</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for item in top_10 %}
+
+            <tr>
+
+                <td>{{ loop.index }}</td>
+                <td>{{ item.id }}</td>
+                <td>{{ "%.2f"|format(item.gc) }}%</td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- GRAPH -->
+    <div class="card shadow mt-4 p-4">
 
         <h3>
             GC Content Visualization
@@ -170,24 +448,112 @@
 
         <img
             src="data:image/png;base64,{{ plot_url }}"
-            class="img-fluid"
-        >
+            class="img-fluid rounded">
 
     </div>
 
-    <div class="mt-4">
+    <!-- ALL SEQUENCES -->
+    <div class="card shadow mt-4 p-4">
+
+        <h3>
+            All Sequences
+        </h3>
+
+        <div class="table-responsive">
+
+            <table class="table table-striped">
+
+                <thead class="table-secondary">
+
+                <tr>
+
+                    <th>File</th>
+                    <th>ID</th>
+                    <th>Length</th>
+                    <th>GC Content (%)</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in all_data %}
+
+                <tr>
+
+                    <td>{{ item.file }}</td>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.length }}</td>
+                    <td>{{ "%.2f"|format(item.gc) }}%</td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- DOWNLOAD -->
+    <div class="text-center mt-4">
 
         <a href="/download"
-           class="btn btn-success">
+           class="btn btn-success btn-lg">
 
-            Download CSV
+            📥 Download CSV Results
+
         </a>
 
     </div>
 
     {% endif %}
 
+    <footer class="text-center mt-5 text-muted">
+
+        <hr>
+
+        DNA Sequence Analyzer |
+        Noel Napitupulu |
+        G0401241004
+
+    </footer>
+
 </div>
+
+<script>
+
+document
+.getElementById("fileInput")
+.addEventListener("change", function() {
+
+    let total = this.files.length;
+
+    if(total === 0){
+
+        document
+        .getElementById("fileCount")
+        .innerText =
+        "Belum ada file dipilih";
+
+    }
+
+    else{
+
+        document
+        .getElementById("fileCount")
+        .innerText =
+        total + " file dipilih";
+
+    }
+
+});
+
+</script>
 
 </body>
 </html>
